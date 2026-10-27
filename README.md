@@ -40,6 +40,40 @@ Only newer stable versions are installed; configuration and databases are untouc
 You can also re-run the installer to update. Stop the native service before updating, then restart it from
 the dashboard. Configuration and databases are not changed by the installer.
 
+## JSON import and export
+
+In **Settings**, choose **Import links from JSON** (`o`) or **Export links to JSON** (`f`).
+Export includes all links, regardless of the current search filter, without database IDs or analytics.
+
+```json
+{
+  "version": 1,
+  "links": [
+    {
+      "alias": "docs",
+      "destination": "https://example.com/docs",
+      "enabled": true,
+      "created_at": "2026-03-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+`alias` and `destination` are required. `enabled` defaults to `true`, and
+`created_at` defaults to import time (RFC3339 when provided). Unsupported versions,
+unknown fields, invalid links, and duplicate aliases within a file are rejected.
+Import previews new, unchanged, and conflicting links before confirmation. Conflicts
+use the alias as the key and are skipped by default; optionally overwrite their URL
+and enabled state while preserving existing IDs, creation dates, and clicks.
+Imports are transactional; importing the same file again creates no duplicates.
+
+Paths may be absolute, relative to the launch directory, or start with `~/`.
+The resolved absolute path is shown before confirmation. Imports follow symlinks;
+exports reject a symlink at the output file (including broken symlinks), but allow
+symlinked parent directories. Export asks before replacing an existing regular file
+and writes via a temporary file with owner-only permissions. Destination directories
+must already exist. These files contain link destinations; keep them private.
+
 ## Build and run
 
 ```sh

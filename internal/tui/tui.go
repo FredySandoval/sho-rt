@@ -58,6 +58,8 @@ type Model struct {
 	serviceStatus  string
 	settingsAction int
 	updating       bool
+	transferPath   string
+	transferData   store.Transfer
 }
 
 func New(path string, c config.Config, db *store.Store, r *server.Runner) *Model {
@@ -298,6 +300,23 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.form = f.(*huh.Form)
 		if m.form.State == huh.StateCompleted {
 			var e error
+			if m.formKind == "import-path" || m.formKind == "export-path" {
+				next, err := m.prepareTransfer()
+				if err != nil {
+					m.form = nil
+					m.notice = err.Error()
+				}
+				return m, next
+			}
+			if m.formKind == "import-confirm" || m.formKind == "export-confirm" {
+				e = m.finishTransfer()
+				m.form = nil
+				if e != nil {
+					m.notice = e.Error()
+				}
+				m.refresh()
+				return m, nil
+			}
 			if m.formKind == "link" {
 				e = m.db.Save(context.Background(), m.editID, m.form.GetString("destination"), m.form.GetString("alias"))
 			} else {
@@ -440,6 +459,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch k {
 		case "e":
 			return m, m.settingsForm()
+		case "o":
+			return m, m.transferForm(true)
+		case "f":
+			return m, m.transferForm(false)
 		case "s":
 			e = m.runner.Start(m.c.Listen(), m.db)
 		case "x":
