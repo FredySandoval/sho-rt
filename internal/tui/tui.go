@@ -13,6 +13,7 @@ import (
 	"github.com/fredy/sho-rt/internal/daemon"
 	"github.com/fredy/sho-rt/internal/server"
 	"github.com/fredy/sho-rt/internal/store"
+	"github.com/fredy/sho-rt/internal/update"
 	"strconv"
 	"strings"
 	"time"
@@ -56,6 +57,7 @@ type Model struct {
 	detail         bool
 	serviceStatus  string
 	settingsAction int
+	updating       bool
 }
 
 func New(path string, c config.Config, db *store.Store, r *server.Runner) *Model {
@@ -230,7 +232,31 @@ type serviceSetupResult struct {
 	err    error
 }
 
+type updateResult struct {
+	message string
+	err     error
+}
+
+func (m *Model) runUpdate(check bool) tea.Cmd {
+	if m.updating {
+		return nil
+	}
+	m.updating = true
+	m.notice = "Checking release…"
+	return func() tea.Msg {
+		message, err := update.Run(context.Background(), check)
+		return updateResult{message, err}
+	}
+}
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if result, ok := msg.(updateResult); ok {
+		m.updating = false
+		m.notice = result.message
+		if result.err != nil {
+			m.notice = result.err.Error()
+		}
+		return m, nil
+	}
 	if expired, ok := msg.(noticeExpired); ok {
 		if time.Since(time.Time(expired)) <= time.Second {
 			m.notice = ""
@@ -301,6 +327,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				return m, tea.ExecProcess(cmd, func(err error) tea.Msg { return serviceSetupResult{action, err} })
+			}
+			if action == "update application" {
+				return m, m.runUpdate(false)
 			}
 			if action == "delete" {
 				if l := m.chosen(); l != nil {
@@ -430,6 +459,12 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.confirm = "restart"
 		case "v":
 			m.confirm = "enable boot startup"
+		case "c":
+			return m, m.runUpdate(true)
+		case "p":
+			if !m.updating {
+				m.confirm = "update application"
+			}
 		case "g":
 			m.confirm = "disable legacy service"
 		}

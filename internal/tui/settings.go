@@ -6,6 +6,8 @@ import (
 )
 
 var settingsActions = []struct{ label, key, description string }{
+	{"Check for updates", "c", "Check GitHub for a newer stable release."},
+	{"Update application", "p", "Install a verified release. Restart the dashboard and background service afterward."},
 	{"Edit configuration", "e", "Edit the listen address, port, and public domain."},
 	{"Start local", "s", "Start the local HTTP server. It stops when you exit sho-rt."},
 	{"Stop local", "x", "Stop the local HTTP server without exiting sho-rt."},
