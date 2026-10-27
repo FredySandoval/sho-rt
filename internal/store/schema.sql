@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS links (
+ id INTEGER PRIMARY KEY, alias TEXT NOT NULL UNIQUE, destination TEXT NOT NULL,
+ created TEXT NOT NULL DEFAULT (datetime('now')), enabled INTEGER NOT NULL DEFAULT 1,
+ clicks INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS clicks (
+ id INTEGER PRIMARY KEY, link_id INTEGER NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+ happened TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS clicks_time ON clicks(happened);
+PRAGMA user_version=1;

@@ -1,0 +1,45 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "sho-rt", "version": "1.0.0" },
+  "paths": {
+    "/{slug}": {
+      "parameters": [{
+        "name": "slug",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "pattern": "^[a-zA-Z0-9_-]{1,64}$" }
+      }],
+      "get": {
+        "summary": "Redirect and record a click (best-effort)",
+        "description": "Query strings are ignored. Responses use Cache-Control: no-store.",
+        "responses": {
+          "302": { "$ref": "#/components/responses/Redirect" },
+          "404": { "description": "Unknown or invalid slug" },
+          "410": { "description": "Link disabled" },
+          "503": { "description": "Destination lookup unavailable" }
+        }
+      },
+      "head": {
+        "summary": "Inspect a redirect without recording a click",
+        "description": "Same as GET, but without a response body or click tracking.",
+        "responses": {
+          "302": { "$ref": "#/components/responses/Redirect" },
+          "404": { "description": "Unknown or invalid slug" },
+          "410": { "description": "Link disabled" },
+          "503": { "description": "Destination lookup unavailable" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "Redirect": {
+        "description": "Temporary redirect",
+        "headers": {
+          "Location": { "required": true, "schema": { "type": "string", "format": "uri" } },
+          "Cache-Control": { "schema": { "type": "string", "const": "no-store" } }
+        }
+      }
+    }
+  }
+}
