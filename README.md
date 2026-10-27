@@ -40,21 +40,6 @@ Only newer stable versions are installed; configuration and databases are untouc
 You can also re-run the installer to update. Stop the native service before updating, then restart it from
 the dashboard. Configuration and databases are not changed by the installer.
 
-### Publish a release
-
-Push the code and a version tag to GitHub:
-
-```sh
-git push origin main
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-`.github/workflows/release.yml` tests the project, cross-compiles Linux/macOS
-ARM64/AMD64 archives, and publishes a GitHub release with `checksums.txt`.
-The installer becomes usable after the first successful release. GitHub Actions
-must be enabled and able to download the Go toolchain specified in `go.mod`.
-
 ## Build and run
 
 ```sh
