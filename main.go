@@ -9,6 +9,7 @@ import (
 	"github.com/fredy/sho-rt/internal/server"
 	"github.com/fredy/sho-rt/internal/store"
 	"github.com/fredy/sho-rt/internal/tui"
+	"github.com/fredy/sho-rt/internal/update"
 	"os"
 	"time"
 )
@@ -20,6 +21,21 @@ func main() {
 	}
 }
 func run() error {
+	if len(os.Args) > 1 && os.Args[1] == "--version" {
+		fmt.Println("sho-rt", update.Version)
+		return nil
+	}
+	if len(os.Args) > 1 && os.Args[1] == "update" {
+		check := len(os.Args) == 3 && os.Args[2] == "--check"
+		if len(os.Args) > 2 && !check {
+			return fmt.Errorf("usage: sho-rt update [--check]")
+		}
+		message, err := update.Run(context.Background(), check)
+		if err == nil {
+			fmt.Println(message)
+		}
+		return err
+	}
 	if len(os.Args) == 3 && os.Args[1] == "--internal-service" {
 		s, e := daemon.New(os.Args[2], true)
 		if e != nil {
