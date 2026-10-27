@@ -1,6 +1,6 @@
 # sho-rt
 
-A single-binary Go link shortener with a keyboard-first dashboard, SQLite storage, and a native background service. Public links use `link.fredy.dev` by default.
+A single-binary Go link shortener with a keyboard-first dashboard, SQLite storage, and a native background service.
 
 Public redirect API: [OpenAPI specification](api/openapi.json).
 
@@ -29,20 +29,20 @@ The terminal should be at least 60 columns × 18 rows. A wider terminal shows th
 
 All normal management is inside Settings:
 
-| Key | Action |
-| --- | --- |
-| E | Edit listening IP, port, public domain, and database location |
-| S / X | Start / stop the foreground HTTP server |
+| Key   | Action                                                                 |
+| ---   | ---                                                                    |
+| E     | Edit listening IP, port, public domain, and database location          |
+| S / X | Start / stop the foreground HTTP server                                |
 | I / R | Install / remove the persistent native service (confirmation required) |
-| B / Z | Start / stop the native background service |
-| U | Restart the native service |
-| O | Enable / disable automatic startup |
+| B / Z | Start / stop the native background service                             |
+| U     | Restart the native service                                             |
+| O     | Enable / disable automatic startup                                     |
 
 The local server stops when the dashboard exits. The native service runs independently and survives closing the dashboard. A listener bind prevents duplicate servers on the same address and port. Stop the local server before switching to daemon mode; **B** does this automatically.
 
 Native management uses systemd on Linux, launchd on macOS, and Windows Services on Windows. Installation/removal and startup changes may require administrator permissions; errors appear in the dashboard. Linux requires a functioning systemd service manager. Automatic startup changes re-create an installed service while preserving its running state. Service integration is platform-dependent; automated tests do not install or modify host services.
 
-Default listening address: `127.0.0.1:3000`. To use `https://link.fredy.dev/alias`, configure DNS and a TLS reverse proxy forwarding to this address, or configure an appropriate public listening address. Changing the display domain does not configure DNS, TLS, or open firewall ports. There is no remote management endpoint.
+Default listening address: `127.0.0.1:3000`. To use `https://example.com/alias`, configure DNS and a TLS reverse proxy forwarding to this address, or configure an appropriate public listening address. Changing the display domain does not configure DNS, TLS, or open firewall ports. There is no remote management endpoint.
 
 ## Persistence
 
@@ -57,10 +57,10 @@ Click events contain only link IDs and UTC timestamps, not visitor IP addresses.
 ## Layout
 
 - `internal/config`: OS-specific paths and atomic configuration persistence
-- `internal/store`: pure-Go SQLite, embedded migrations, validation, links, click events
+- `internal/store` : pure-Go SQLite, embedded migrations, validation, links, click events
 - `internal/server`: HTTP redirects and graceful listener lifecycle
 - `internal/daemon`: native service integration
-- `internal/tui`: Bubble Tea v2, Bubbles v2, Lip Gloss v2, Huh v2 dashboard
+- `internal/tui`   : Bubble Tea v2, Bubbles v2, Lip Gloss v2, Huh v2 dashboard
 
 ## Tests
 
