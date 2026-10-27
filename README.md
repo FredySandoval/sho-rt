@@ -4,6 +4,55 @@ A single-binary Go link shortener with a keyboard-first dashboard, SQLite storag
 
 Public redirect API: [OpenAPI specification](api/openapi.json).
 
+## Install a release
+
+Linux and macOS are supported on ARM64 and AMD64. No Go installation is needed:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/FredySandoval/sho-rt/main/install.sh | bash
+sho-rt
+```
+
+The installer verifies SHA-256 checksums and uses `/usr/local/bin` when writable,
+otherwise `~/.local/bin`. It does not use sudo or install a service automatically.
+You can inspect `install.sh` before running it. Override the version or destination:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/FredySandoval/sho-rt/main/install.sh | VERSION=v0.1.0 INSTALL_DIR="$HOME/.local/bin" bash
+```
+
+Release binaries support self-update:
+
+```sh
+sho-rt --version
+sho-rt update --check
+sho-rt update
+```
+
+Settings also offers **Check for updates** and **Update application** (confirmation
+required). Updates verify SHA-256 checksums and atomically replace the executable;
+the binary directory must be writable. Restart the dashboard and any background
+service afterward. Development builds (`dev`) must first install a stable release.
+Only newer stable versions are installed; configuration and databases are untouched.
+
+You can also re-run the installer to update. Stop the native service before updating, then restart it from
+the dashboard. Configuration and databases are not changed by the installer.
+
+### Publish a release
+
+Push the code and a version tag to GitHub:
+
+```sh
+git push origin main
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+`.github/workflows/release.yml` tests the project, cross-compiles Linux/macOS
+ARM64/AMD64 archives, and publishes a GitHub release with `checksums.txt`.
+The installer becomes usable after the first successful release. GitHub Actions
+must be enabled and able to download the Go toolchain specified in `go.mod`.
+
 ## Build and run
 
 ```sh
