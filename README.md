@@ -2,6 +2,8 @@
 
 A single-binary Go link shortener with a keyboard-first dashboard, SQLite storage, and a native background service.
 
+[![Current sho-rt build showing the links dashboard, sidebar statistics, and keyboard controls](assets/screenshot-cli-sho-rt.png)](assets/screenshot-cli-sho-rt.png)
+
 Public redirect API: [OpenAPI specification](api/openapi.json).
 
 ## Install a release
